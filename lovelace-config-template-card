@@ -1,0 +1,13 @@
+type: custom:config-template-card
+variables:
+  LAT: states['sensor.pepwave_latitude'].state
+  LON: states['sensor.pepwave_longitude'].state
+entities:
+  - sensor.pepwave_latitude
+  - sensor.pepwave_longitude
+card:
+  type: iframe
+  title: Local Radar
+  url: >-
+    ${"https://embed.windy.com/embed2.html?lat="+LAT+"&lon="+LON+"&detailLat="+LAT+"&detailLon="+LON+"&width=650&height=450&zoom=10&level=surface&overlay=radar&product=radar&menu=&message=true&marker=&calendar=24&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=%C2%B0F&radarRange=-1"}
+  aspect_ratio: 100%
