@@ -2,29 +2,30 @@
     {
         "id": "4ce2db847093c8f9",
         "type": "group",
-        "z": "7efc3a7000cf2c8c",
+        "z": "44d2e95015673d7f",
         "name": "GPS Location Integration",
         "style": {
-            "fill": "#c8e7a7",
+            "fill": "#b797cf",
             "label": true,
             "color": "#000000"
         },
         "nodes": [
             "2c8bad61e3d9e352",
             "90703a2767c94ddd",
-            "1e0b0b13ddde7b5d"
+            "1e0b0b13ddde7b5d",
+            "20266adfde35d343"
         ],
-        "x": 68,
-        "y": 53,
-        "w": 738,
+        "x": 48,
+        "y": 33,
+        "w": 698,
         "h": 234
     },
     {
         "id": "2c8bad61e3d9e352",
         "type": "mqtt out",
-        "z": "7efc3a7000cf2c8c",
+        "z": "44d2e95015673d7f",
         "g": "4ce2db847093c8f9",
-        "name": "",
+        "name": "Set Lat/Long for Local Weather Maps",
         "topic": "",
         "qos": "",
         "retain": "",
@@ -34,14 +35,14 @@
         "correl": "",
         "expiry": "",
         "broker": "f9896bb2219970c5",
-        "x": 730,
+        "x": 570,
         "y": 160,
         "wires": []
     },
     {
         "id": "90703a2767c94ddd",
         "type": "group",
-        "z": "7efc3a7000cf2c8c",
+        "z": "44d2e95015673d7f",
         "g": "4ce2db847093c8f9",
         "name": "Create entities via MQTT Discovery",
         "style": {
@@ -53,15 +54,15 @@
             "4ee6dbdfc53cbd01",
             "9445266f3373e351"
         ],
-        "x": 94,
-        "y": 179,
-        "w": 492,
+        "x": 74,
+        "y": 159,
+        "w": 282,
         "h": 82
     },
     {
         "id": "4ee6dbdfc53cbd01",
         "type": "inject",
-        "z": "7efc3a7000cf2c8c",
+        "z": "44d2e95015673d7f",
         "g": "90703a2767c94ddd",
         "name": "",
         "props": [
@@ -80,8 +81,8 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 200,
-        "y": 220,
+        "x": 180,
+        "y": 200,
         "wires": [
             [
                 "9445266f3373e351"
@@ -91,7 +92,7 @@
     {
         "id": "9445266f3373e351",
         "type": "function",
-        "z": "7efc3a7000cf2c8c",
+        "z": "44d2e95015673d7f",
         "g": "90703a2767c94ddd",
         "name": "Build Pepwave GPS Sensor",
         "func": "var name =                      \"Pepwave\"\nvar deviceName =                \"pepwave\"\nvar model =                     \"Pepwave MAX BR1 Pro 5G\"\nvar id =                        \"293B-1637-2F63\"\n\nvar viaDevice =  {\n        \"manufacturer\":     \"Pepwave\",\n        \"identifiers\":      id,\n        \"hw_version\":       1,\n        \"sw_version\":       \"8.2.1 build 5018\",\n        \"name\":             'Pepwave Router',\n        \"model\":            model\n    }\n\nmsg.retain = true\nmsg.qos = 1\n\n//#############################################\nvar type = \"Location\"\nvar entity = \"device_tracker\"\n\nmsg.payload = {\n  \"name\":                       name + \" \" + type,\n  \"object_id\":                  name + \" \" + type,\n  \"unique_id\":                  name + \" \" + type,\n  \"state_topic\":                \"integration/pepwave/location/state\",\n  \"json_attributes_topic\":      \"integration/pepwave/location/attributes\",\n  \"payload_home\":               \"home\", \n  \"payload_not_home\":           \"not_home\", \n  \"device\":                     viaDevice,\n  \"enabled_by_default\":         \"true\",\n  \"icon\":                       \"mdi:truck\",\n  \"source_type\":                \"gps\"\n}\n\nmsg.topic = \"homeassistant/\" + entity+\"/\" + deviceName+\"/\"+type.toLowerCase()+\"/config\"\nnode.send (msg)\n\n//#############################################\nvar type = \"Coordinates\"\nvar entity = \"sensor\"\n\nmsg.payload = {\n  \"name\": name + \" \" + type,\n  \"object_id\": name + \" \" + type,\n  \"unique_id\": name + \" \" + type,\n  \"state_topic\": \"integration/pepwave/location/attributes\",\n  \"value_template\": \"{{ value_json.coordinates}}\",\n  \"device\": viaDevice,\n  \"enabled_by_default\": \"true\",\n  \"entity_category\": \"diagnostic\",\n  \"icon\": \"mdi:compass\"\n}\n\nmsg.topic = \"homeassistant/\" + entity + \"/\" + deviceName + \"/\" + type.toLowerCase() + \"/config\"\nnode.send(msg)\n\n//#############################################\nvar type = \"Map\"\nvar entity = \"sensor\"\n\nmsg.payload = {\n  \"name\": name + \" \" + type,\n  \"object_id\": name + \" \" + type,\n  \"unique_id\": name + \" \" + type,\n  \"state_topic\": \"integration/pepwave/location/attributes\",\n  \"value_template\": \"{{ value_json.map}}\",\n  \"device\": viaDevice,\n  \"enabled_by_default\": \"true\",\n  \"icon\": \"mdi:compass\"\n}\n\nmsg.topic = \"homeassistant/\" + entity + \"/\" + deviceName + \"/\" + type.toLowerCase() + \"/config\"\n//node.send(msg)\n\n//#############################################\nvar type = \"Current Speed\"\nvar entity = \"sensor\"\n\nmsg.payload = {\n  \"name\": name + \" \" + type,\n  \"object_id\": name + \" \" + type,\n  \"unique_id\": name + \" \" + type,\n  \"state_topic\": \"integration/pepwave/location/attributes\",\n  \"value_template\": \"{{ value_json.speed_mph}}\",\n  \"unit_of_measurement\":  \"mph\",\n  \"device\": viaDevice,\n  \"enabled_by_default\": \"true\",\n  \"entity_category\": \"diagnostic\",\n  \"icon\": \"mdi:run\"\n}\n\nmsg.topic = \"homeassistant/\" + entity + \"/\" + deviceName + \"/\" + type.toLowerCase().replace(/ /g,\"_\") + \"/config\"\nnode.send(msg)\n\n//#############################################\nvar type = \"Course Ordinal\"\nvar entity = \"sensor\"\n\nmsg.payload = {\n  \"name\": name + \" \" + type,\n  \"object_id\": name + \" \" + type,\n  \"unique_id\": name + \" \" + type,\n  \"state_topic\": \"integration/pepwave/location/attributes\",\n  \"value_template\": \"{{ value_json.course_ordinal}}\",\n  \"device\": viaDevice,\n  \"enabled_by_default\": \"true\",\n  \"entity_category\": \"diagnostic\",\n  \"icon\": \"mdi:run\"\n}\n\nmsg.topic = \"homeassistant/\" + entity + \"/\" + deviceName + \"/\" + type.toLowerCase().replace(/ /g, \"_\") + \"/config\"\nnode.send(msg)\n\n//#############################################\nvar type = \"Last Message\"\nvar entity = \"sensor\"\n\nmsg.payload = {\n  \"name\": name + \" \" + type,\n  \"object_id\": name + \" \" + type,\n  \"unique_id\": name + \" \" + type,\n  \"state_topic\": \"integration/pepwave/location/attributes\",\n  \"value_template\": \"{{ value_json.lastMessage}}\",\n  \"device\": viaDevice,\n  \"enabled_by_default\": \"true\",\n  \"entity_category\": \"diagnostic\",\n  \"icon\": \"mdi:run\"\n}\n\nmsg.topic = \"homeassistant/\" + entity + \"/\" + deviceName + \"/\" + type.toLowerCase().replace(/ /g, \"_\") + \"/config\"\nnode.send(msg)\n\n//#############################################\nvar type = \"Latitude\"\nvar entity = \"sensor\"\n\nmsg.payload = {\n  \"name\": name + \" \" + type,\n  \"object_id\": name + \" \" + type,\n  \"unique_id\": name + \" \" + type,\n  \"state_topic\": \"integration/pepwave/location/attributes\",\n  \"value_template\": \"{{ value_json.latitude}}\",\n  \"device\": viaDevice,\n  \"enabled_by_default\": \"true\",\n  \"entity_category\": \"diagnostic\",\n  \"icon\": \"mdi:run\"\n}\n\nmsg.topic = \"homeassistant/\" + entity + \"/\" + deviceName + \"/\" + type.toLowerCase().replace(/ /g, \"_\") + \"/config\"\nnode.send(msg)\n\n//#############################################\nvar type = \"Longitude\"\nvar entity = \"sensor\"\n\nmsg.payload = {\n  \"name\": name + \" \" + type,\n  \"object_id\": name + \" \" + type,\n  \"unique_id\": name + \" \" + type,\n  \"state_topic\": \"integration/pepwave/location/attributes\",\n  \"value_template\": \"{{ value_json.longitude}}\",\n  \"device\": viaDevice,\n  \"enabled_by_default\": \"true\",\n  \"entity_category\": \"diagnostic\",\n  \"icon\": \"mdi:run\"\n}\n\nmsg.topic = \"homeassistant/\" + entity + \"/\" + deviceName + \"/\" + type.toLowerCase().replace(/ /g, \"_\") + \"/config\"\nnode.send(msg)",
@@ -100,20 +101,21 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 440,
-        "y": 220,
+        "x": 315,
+        "y": 200,
         "wires": [
             [
                 "2c8bad61e3d9e352"
             ]
-        ]
+        ],
+        "l": false
     },
     {
         "id": "1e0b0b13ddde7b5d",
         "type": "group",
-        "z": "7efc3a7000cf2c8c",
+        "z": "44d2e95015673d7f",
         "g": "4ce2db847093c8f9",
-        "name": "Format GPMRC Messages to MQTT",
+        "name": "Format GPMRC Messages from Pepwave",
         "style": {
             "fill": "#ffff7f",
             "label": true,
@@ -124,15 +126,15 @@
             "aa48d53fb0a4eb0e",
             "1542f46cc1cc7a8e"
         ],
-        "x": 94,
-        "y": 79,
-        "w": 492,
+        "x": 74,
+        "y": 59,
+        "w": 282,
         "h": 82
     },
     {
         "id": "d1309756.2ecf68",
         "type": "udp in",
-        "z": "7efc3a7000cf2c8c",
+        "z": "44d2e95015673d7f",
         "g": "1e0b0b13ddde7b5d",
         "name": "",
         "iface": "",
@@ -141,8 +143,8 @@
         "multicast": "false",
         "group": "",
         "datatype": "utf8",
-        "x": 180,
-        "y": 120,
+        "x": 160,
+        "y": 100,
         "wires": [
             [
                 "aa48d53fb0a4eb0e"
@@ -152,7 +154,7 @@
     {
         "id": "aa48d53fb0a4eb0e",
         "type": "moment",
-        "z": "7efc3a7000cf2c8c",
+        "z": "44d2e95015673d7f",
         "g": "1e0b0b13ddde7b5d",
         "name": "",
         "topic": "",
@@ -167,8 +169,8 @@
         "output": "lastMessage",
         "outputType": "msg",
         "outTz": "America/New_York",
-        "x": 275,
-        "y": 120,
+        "x": 255,
+        "y": 100,
         "wires": [
             [
                 "1542f46cc1cc7a8e"
@@ -179,21 +181,51 @@
     {
         "id": "1542f46cc1cc7a8e",
         "type": "function",
-        "z": "7efc3a7000cf2c8c",
+        "z": "44d2e95015673d7f",
         "g": "1e0b0b13ddde7b5d",
         "name": "Convert GPMRC Sentence",
-        "func": "var msg1 = {'payload': {}}\nvar sentence = msg.payload\nvar results = {}\nvar nmea = sentence.split(\",\");\nvar status = (nmea[2] == \"A\" ? \"Ok!\" : \"Warning\");\nvar latDeg = parseInt(nmea[3].substring(0, 2));\nvar latMin = nmea[3].substring(2);\nvar lat = Number((latDeg + (latMin / 60)).toFixed(5));\nvar latDirection = nmea[4];\nif (latDirection == \"S\") {\n    lat = lat * -1\n}\n\nvar lngDeg = parseInt(nmea[5].substring(0, 3));\nvar lngMin = nmea[5].substring(3);\nvar lng = Number((lngDeg + (lngMin / 60)).toFixed(5));\nvar lngDirection = nmea[6];\nif (lngDirection == \"W\") {\n    lng = lng * -1\n}\n    \nmsg1.payload = {\n        'source':       msg.fromip,\n        'latitude':     lat,\n        'longitude':    lng,\n        'coordinates':  lat +\",\" + lng,\n        \"gps_accuracy\": 1.2,\n        'speed_mph':    Number((nmea[7] * 1.15078).toFixed(1)),\n        'course':       nmea[8] * 1,\n        'course_ordinal': \"\",\n        'status':       status + \" \" + lat + \"\" + latDirection + \" \" + lng + \"\" + lngDirection\n    }\n\n\nvar direction = msg1.payload.course\nvar ordinal = \"\"\n\nif (direction >= 0 && direction <= 11) {\n    ordinal = \"N\"\n} else if (direction > 11 && direction <= 34) {\n    ordinal = \"NNE\"\n} else if (direction > 34 && direction <= 56) {\n    ordinal = \"NE\"\n} else if (direction > 56 && direction <= 79) {\n    ordinal = \"ENE\"\n} else if (direction > 79 && direction <= 101) {\n    ordinal = \"E\"\n} else if (direction > 101 && direction <= 124) {\n    ordinal = \"ESE\"\n} else if (direction > 124 && direction <= 146) {\n    ordinal = \"SE\"\n} else if (direction > 146 && direction <= 169) {\n    ordinal = \"SSE\"\n} else if (direction > 169 && direction <= 191) {\n    ordinal = \"S\"\n} else if (direction > 191 && direction <= 214) {\n    ordinal = \"SSW\"\n} else if (direction > 214 && direction <= 236) {\n    ordinal = \"SW\"\n} else if (direction > 236 && direction <= 259) {\n    ordinal = \"WSW\"\n} else if (direction > 259 && direction <= 281) {\n    ordinal = \"W\"\n} else if (direction > 281 && direction <= 304) {\n    ordinal = \"WNW\"\n} else if (direction > 304 && direction <= 326) {\n    ordinal = \"NW\"\n} else if (direction > 326 && direction <= 349) {\n    ordinal = \"NNW\"\n} else if (direction > 349 && direction <= 360) {\n    ordinal = \"N\"\n} else {\n    ordinal = \"Error: \" + direction\n}\nmsg1.payload.course_ordinal = ordinal\nmsg1.payload.lastMessage = msg.lastMessage\nmsg1.topic = \"integration/pepwave/location/attributes\"\nmsg.retain = \"true\"\n\nreturn msg1;\n",
-        "outputs": 1,
+        "func": "var msg1 = {'payload': {}}\nvar sentence = msg.payload\nvar results = {}\nvar nmea = sentence.split(\",\");\nvar status = (nmea[2] == \"A\" ? \"Ok!\" : \"Warning\");\nvar latDeg = parseInt(nmea[3].substring(0, 2));\nvar latMin = nmea[3].substring(2);\nvar lat = Number((latDeg + (latMin / 60)).toFixed(5));\nvar latDirection = nmea[4];\nif (latDirection == \"S\") {\n    lat = lat * -1\n}\n\nvar lngDeg = parseInt(nmea[5].substring(0, 3));\nvar lngMin = nmea[5].substring(3);\nvar lng = Number((lngDeg + (lngMin / 60)).toFixed(5));\nvar lngDirection = nmea[6];\nif (lngDirection == \"W\") {\n    lng = lng * -1\n}\n    \nmsg1.payload = {\n        'source':       msg.fromip,\n        'latitude':     lat,\n        'longitude':    lng,\n        'coordinates':  lat +\",\" + lng,\n        \"gps_accuracy\": 1.2,\n        'speed_mph':    Number((nmea[7] * 1.15078).toFixed(1)),\n        'course':       nmea[8] * 1,\n        'course_ordinal': \"\",\n        'status':       status + \" \" + lat + \"\" + latDirection + \" \" + lng + \"\" + lngDirection\n    }\n\n\nvar direction = msg1.payload.course\nvar ordinal = \"\"\n\nif (direction >= 0 && direction <= 11) {\n    ordinal = \"N\"\n} else if (direction > 11 && direction <= 34) {\n    ordinal = \"NNE\"\n} else if (direction > 34 && direction <= 56) {\n    ordinal = \"NE\"\n} else if (direction > 56 && direction <= 79) {\n    ordinal = \"ENE\"\n} else if (direction > 79 && direction <= 101) {\n    ordinal = \"E\"\n} else if (direction > 101 && direction <= 124) {\n    ordinal = \"ESE\"\n} else if (direction > 124 && direction <= 146) {\n    ordinal = \"SE\"\n} else if (direction > 146 && direction <= 169) {\n    ordinal = \"SSE\"\n} else if (direction > 169 && direction <= 191) {\n    ordinal = \"S\"\n} else if (direction > 191 && direction <= 214) {\n    ordinal = \"SSW\"\n} else if (direction > 214 && direction <= 236) {\n    ordinal = \"SW\"\n} else if (direction > 236 && direction <= 259) {\n    ordinal = \"WSW\"\n} else if (direction > 259 && direction <= 281) {\n    ordinal = \"W\"\n} else if (direction > 281 && direction <= 304) {\n    ordinal = \"WNW\"\n} else if (direction > 304 && direction <= 326) {\n    ordinal = \"NW\"\n} else if (direction > 326 && direction <= 349) {\n    ordinal = \"NNW\"\n} else if (direction > 349 && direction <= 360) {\n    ordinal = \"N\"\n} else {\n    ordinal = \"Error: \" + direction\n}\nmsg1.payload.course_ordinal = ordinal\nmsg1.payload.lastMessage = msg.lastMessage\nmsg1.topic = \"integration/pepwave/location/attributes\"\nmsg.retain = \"true\"\n\nvar msg2 = {}\nmsg2.payload = {\n    \"data\": {\n        \"latitude\": msg1.payload.latitude.toFixed(4),\n        \"longitude\": msg1.payload.longitude.toFixed(4)\n    }\n}\nreturn [msg2,msg1]",
+        "outputs": 2,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 440,
-        "y": 120,
+        "x": 315,
+        "y": 100,
         "wires": [
+            [
+                "20266adfde35d343"
+            ],
             [
                 "2c8bad61e3d9e352"
             ]
+        ],
+        "l": false
+    },
+    {
+        "id": "20266adfde35d343",
+        "type": "api-call-service",
+        "z": "44d2e95015673d7f",
+        "g": "4ce2db847093c8f9",
+        "name": "Set Current location as \"Home\"",
+        "server": "60e83e55.b35a",
+        "version": 5,
+        "debugenabled": false,
+        "domain": "homeassistant",
+        "service": "set_location",
+        "areaId": [],
+        "deviceId": [],
+        "entityId": [],
+        "data": "",
+        "dataType": "jsonata",
+        "mergeContext": "",
+        "mustacheAltTags": false,
+        "outputProperties": [],
+        "queue": "none",
+        "x": 550,
+        "y": 100,
+        "wires": [
+            []
         ]
     },
     {
@@ -222,5 +254,19 @@
         "willMsg": {},
         "userProps": "",
         "sessionExpiry": ""
+    },
+    {
+        "id": "60e83e55.b35a",
+        "type": "server",
+        "name": "Home Assistant",
+        "addon": true,
+        "rejectUnauthorizedCerts": true,
+        "ha_boolean": "",
+        "connectionDelay": false,
+        "cacheJson": false,
+        "heartbeat": false,
+        "heartbeatInterval": "",
+        "statusSeparator": "",
+        "enableGlobalContextStore": false
     }
 ]
